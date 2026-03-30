@@ -43,10 +43,8 @@ class JsonPlaceholderImportCommandTest extends TestCase
 
     public function test_it_upserts_existing_imported_rows_and_only_adds_new_upstream_rows(): void
     {
-        Http::fake($this->fakeJsonPlaceholderResponses());
-        Artisan::call('slmp:import-jsonplaceholder');
-
-        Http::fake($this->fakeJsonPlaceholderResponses([
+        $initialPayload = $this->fakeJsonPlaceholderPayload();
+        $updatedPayload = $this->fakeJsonPlaceholderPayload([
             'posts' => [
                 [
                     'id' => 10,
@@ -61,14 +59,40 @@ class JsonPlaceholderImportCommandTest extends TestCase
                     'body' => 'New body',
                 ],
             ],
-        ]));
+        ]);
 
+        Http::fake([
+            'https://jsonplaceholder.typicode.com/users' => Http::sequence()
+                ->push($initialPayload['users'])
+                ->push($updatedPayload['users']),
+            'https://jsonplaceholder.typicode.com/posts' => Http::sequence()
+                ->push($initialPayload['posts'])
+                ->push($updatedPayload['posts']),
+            'https://jsonplaceholder.typicode.com/comments' => Http::sequence()
+                ->push($initialPayload['comments'])
+                ->push($updatedPayload['comments']),
+            'https://jsonplaceholder.typicode.com/albums' => Http::sequence()
+                ->push($initialPayload['albums'])
+                ->push($updatedPayload['albums']),
+            'https://jsonplaceholder.typicode.com/photos' => Http::sequence()
+                ->push($initialPayload['photos'])
+                ->push($updatedPayload['photos']),
+            'https://jsonplaceholder.typicode.com/todos' => Http::sequence()
+                ->push($initialPayload['todos'])
+                ->push($updatedPayload['todos']),
+        ]);
+
+        Artisan::call('slmp:import-jsonplaceholder');
         Artisan::call('slmp:import-jsonplaceholder');
 
         $this->assertDatabaseCount('posts', 3);
         $this->assertDatabaseHas('posts', [
             'source_id' => 10,
             'title' => 'Updated title',
+        ]);
+        $this->assertDatabaseHas('posts', [
+            'source_id' => 11,
+            'title' => 'Second post',
         ]);
         $this->assertDatabaseHas('posts', [
             'source_id' => 12,
@@ -82,7 +106,25 @@ class JsonPlaceholderImportCommandTest extends TestCase
      */
     protected function fakeJsonPlaceholderResponses(array $overrides = []): array
     {
-        $payload = array_replace([
+        $payload = $this->fakeJsonPlaceholderPayload($overrides);
+
+        return [
+            'https://jsonplaceholder.typicode.com/users' => Http::response($payload['users']),
+            'https://jsonplaceholder.typicode.com/posts' => Http::response($payload['posts']),
+            'https://jsonplaceholder.typicode.com/comments' => Http::response($payload['comments']),
+            'https://jsonplaceholder.typicode.com/albums' => Http::response($payload['albums']),
+            'https://jsonplaceholder.typicode.com/photos' => Http::response($payload['photos']),
+            'https://jsonplaceholder.typicode.com/todos' => Http::response($payload['todos']),
+        ];
+    }
+
+    /**
+     * @param array<string, array<int, array<string, mixed>>> $overrides
+     * @return array<string, array<int, array<string, mixed>>>
+     */
+    protected function fakeJsonPlaceholderPayload(array $overrides = []): array
+    {
+        return array_replace([
             'users' => [
                 [
                     'id' => 1,
@@ -160,14 +202,5 @@ class JsonPlaceholderImportCommandTest extends TestCase
                 ],
             ],
         ], $overrides);
-
-        return [
-            'https://jsonplaceholder.typicode.com/users' => Http::response($payload['users']),
-            'https://jsonplaceholder.typicode.com/posts' => Http::response($payload['posts']),
-            'https://jsonplaceholder.typicode.com/comments' => Http::response($payload['comments']),
-            'https://jsonplaceholder.typicode.com/albums' => Http::response($payload['albums']),
-            'https://jsonplaceholder.typicode.com/photos' => Http::response($payload['photos']),
-            'https://jsonplaceholder.typicode.com/todos' => Http::response($payload['todos']),
-        ];
     }
 }

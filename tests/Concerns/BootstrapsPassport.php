@@ -12,11 +12,10 @@ trait BootstrapsPassport
     {
         Artisan::call('passport:keys', ['--force' => true]);
 
-        if (! DB::table('oauth_clients')->where('personal_access_client', true)->exists()) {
-            app(ClientRepository::class)->createPersonalAccessClient(
-                null,
+        if (! DB::table('oauth_clients')->exists()) {
+            app(ClientRepository::class)->createPersonalAccessGrantClient(
                 'Test Personal Access Client',
-                'http://localhost'
+                'users'
             );
         }
     }
