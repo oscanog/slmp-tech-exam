@@ -10,6 +10,7 @@ use App\Models\Todo;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
@@ -21,7 +22,16 @@ class JsonPlaceholderImportCommandTest extends TestCase
     {
         Http::fake($this->fakeJsonPlaceholderResponses());
 
-        Artisan::call('slmp:import-jsonplaceholder');
+        $this->artisan('slmp:import-jsonplaceholder')
+            ->expectsOutputToContain('Starting JSONPlaceholder import...')
+            ->expectsOutputToContain('Fetching users...')
+            ->expectsOutputToContain('Fetched users: 2 rows.')
+            ->expectsOutputToContain('Importing users...')
+            ->expectsOutputToContain('users: 2 inserted, 0 updated')
+            ->expectsOutputToContain('Importing photos...')
+            ->expectsOutputToContain('photos: 1 inserted, 0 updated')
+            ->expectsOutputToContain('JSONPlaceholder import completed successfully.')
+            ->assertExitCode(0);
 
         $this->assertDatabaseCount('users', 2);
         $this->assertDatabaseCount('posts', 2);
@@ -98,6 +108,30 @@ class JsonPlaceholderImportCommandTest extends TestCase
             'source_id' => 12,
             'title' => 'Brand new post',
         ]);
+    }
+
+    public function test_it_can_fully_reset_and_reimport_all_data(): void
+    {
+        User::factory()->create([
+            'name' => 'Local only user',
+            'email' => 'local-only@example.com',
+        ]);
+
+        Http::fake($this->fakeJsonPlaceholderResponses());
+
+        $this->artisan('slmp:import-jsonplaceholder --mode=reset --yes')
+            ->expectsOutputToContain('Reset mode selected. Wiping the current database...')
+            ->expectsOutputToContain('Re-running migrations...')
+            ->expectsOutputToContain('Recreating Passport clients...')
+            ->expectsOutputToContain('users: 2 inserted, 0 updated')
+            ->expectsOutputToContain('JSONPlaceholder import completed successfully.')
+            ->assertExitCode(0);
+
+        $this->assertDatabaseMissing('users', [
+            'email' => 'local-only@example.com',
+        ]);
+        $this->assertDatabaseCount('users', 2);
+        $this->assertGreaterThan(0, DB::table('oauth_clients')->count());
     }
 
     /**

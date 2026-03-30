@@ -16,25 +16,31 @@ use RuntimeException;
 class JsonPlaceholderImportService
 {
     /**
+     * @param null|callable(string): void $progress
      * @return array<string, array{inserted:int, updated:int}>
      */
-    public function import(): array
+    public function import(?callable $progress = null): array
     {
-        $payload = [
-            'users' => $this->fetchResource('users'),
-            'posts' => $this->fetchResource('posts'),
-            'comments' => $this->fetchResource('comments'),
-            'albums' => $this->fetchResource('albums'),
-            'photos' => $this->fetchResource('photos'),
-            'todos' => $this->fetchResource('todos'),
-        ];
+        $resources = ['users', 'posts', 'comments', 'albums', 'photos', 'todos'];
+        $payload = [];
 
-        return DB::transaction(function () use ($payload) {
+        $this->report($progress, 'Starting JSONPlaceholder import...');
+
+        foreach ($resources as $resource) {
+            $this->report($progress, sprintf('Fetching %s...', $resource));
+            $payload[$resource] = $this->fetchResource($resource);
+            $this->report($progress, sprintf('Fetched %s: %d rows.', $resource, count($payload[$resource])));
+        }
+
+        return DB::transaction(function () use ($payload, $progress) {
             $summary = [];
 
+            $this->report($progress, 'Importing users...');
             $summary['users'] = $this->importUsers($payload['users']);
+            $this->report($progress, $this->formatSummaryLine('users', $summary['users']));
             $userMap = User::query()->whereNotNull('source_id')->pluck('id', 'source_id')->all();
 
+            $this->report($progress, 'Importing posts...');
             $summary['posts'] = $this->syncRelatedRecords(
                 Post::class,
                 $payload['posts'],
@@ -44,8 +50,10 @@ class JsonPlaceholderImportService
                     'body' => $item['body'],
                 ],
             );
+            $this->report($progress, $this->formatSummaryLine('posts', $summary['posts']));
             $postMap = Post::query()->whereNotNull('source_id')->pluck('id', 'source_id')->all();
 
+            $this->report($progress, 'Importing comments...');
             $summary['comments'] = $this->syncRelatedRecords(
                 Comment::class,
                 $payload['comments'],
@@ -56,7 +64,9 @@ class JsonPlaceholderImportService
                     'body' => $item['body'],
                 ],
             );
+            $this->report($progress, $this->formatSummaryLine('comments', $summary['comments']));
 
+            $this->report($progress, 'Importing albums...');
             $summary['albums'] = $this->syncRelatedRecords(
                 Album::class,
                 $payload['albums'],
@@ -65,8 +75,10 @@ class JsonPlaceholderImportService
                     'title' => $item['title'],
                 ],
             );
+            $this->report($progress, $this->formatSummaryLine('albums', $summary['albums']));
             $albumMap = Album::query()->whereNotNull('source_id')->pluck('id', 'source_id')->all();
 
+            $this->report($progress, 'Importing photos...');
             $summary['photos'] = $this->syncRelatedRecords(
                 Photo::class,
                 $payload['photos'],
@@ -77,7 +89,9 @@ class JsonPlaceholderImportService
                     'thumbnail_url' => $item['thumbnailUrl'],
                 ],
             );
+            $this->report($progress, $this->formatSummaryLine('photos', $summary['photos']));
 
+            $this->report($progress, 'Importing todos...');
             $summary['todos'] = $this->syncRelatedRecords(
                 Todo::class,
                 $payload['todos'],
@@ -87,6 +101,9 @@ class JsonPlaceholderImportService
                     'completed' => (bool) $item['completed'],
                 ],
             );
+            $this->report($progress, $this->formatSummaryLine('todos', $summary['todos']));
+
+            $this->report($progress, 'JSONPlaceholder import completed successfully.');
 
             return $summary;
         });
@@ -218,5 +235,28 @@ class JsonPlaceholderImportService
         }
 
         return (int) $map[$sourceId];
+    }
+
+    /**
+     * @param array{inserted:int, updated:int} $stats
+     */
+    protected function formatSummaryLine(string $resource, array $stats): string
+    {
+        return sprintf(
+            '%s: %d inserted, %d updated',
+            $resource,
+            $stats['inserted'],
+            $stats['updated'],
+        );
+    }
+
+    /**
+     * @param null|callable(string): void $progress
+     */
+    protected function report(?callable $progress, string $message): void
+    {
+        if ($progress !== null) {
+            $progress($message);
+        }
     }
 }
