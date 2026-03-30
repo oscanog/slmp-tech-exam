@@ -1,11 +1,11 @@
-# SLMP 01
+# SLMP Tech Exam passed by Melvin Nogoy
 
-Laravel 12 API that imports JSONPlaceholder data into the database with Eloquent and exposes a Passport-protected REST API.
+Laravel 12 API that imports JSONPlaceholder "https://jsonplaceholder.typicode.com/" data into the database with Eloquent and exposes a Passport-protected REST API.
 
 ## Clone
 
 ```bash
-git clone <your-repo-url> slmp_01
+git clone https://github.com/oscanog/slmp-tech-exam.git slmp_01
 cd slmp_01
 ```
 
@@ -28,7 +28,7 @@ cp .env.example .env
 php artisan key:generate --force
 php artisan migrate --force
 php artisan slmp:import-jsonplaceholder
-php artisan serve
+php artisan serve --host=127.0.0.1 --port=8080
 ```
 
 On Windows PowerShell, use `Copy-Item .env.example .env` instead of `cp`.
