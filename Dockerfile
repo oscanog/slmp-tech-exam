@@ -11,6 +11,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
+COPY composer.json composer.lock ./
+RUN composer install --no-interaction --prefer-dist --no-scripts
 COPY docker/app/entrypoint.sh /usr/local/bin/slmp-entrypoint
 
 RUN chmod +x /usr/local/bin/slmp-entrypoint

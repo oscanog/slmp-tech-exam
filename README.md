@@ -13,12 +13,12 @@ cd slmp_01
 
 ```bash
 docker compose build
-docker compose up -d
+docker compose up -d --wait
 docker compose exec app php artisan slmp:import-jsonplaceholder
 ```
 
 App URL: `http://localhost:8080`
-On first boot, wait a few seconds for MySQL, migrations, and Passport setup to finish before opening the app.
+`--wait` makes Docker return only after the app bootstrap is ready.
 
 ## Run Without Docker
 
