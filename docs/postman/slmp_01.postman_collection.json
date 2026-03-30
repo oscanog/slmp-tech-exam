@@ -45,6 +45,18 @@
   ],
   "item": [
     {
+      "name": "System",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/health"
+          }
+        }
+      ]
+    },
+    {
       "name": "Auth",
       "item": [
         {
