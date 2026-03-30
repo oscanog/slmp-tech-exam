@@ -17,10 +17,18 @@ Artisan::command('slmp:import-jsonplaceholder {--mode= : upsert or reset} {--yes
         'upsert' => 'Import new or changed rows only',
         'reset' => 'Full reset database, migrate, then import everything again',
     ];
+    $resourceTables = ['users', 'posts', 'comments', 'albums', 'photos', 'todos'];
 
     $mode = $this->option('mode');
+    $hasExistingResourceData = collect($resourceTables)
+        ->contains(fn (string $table): bool => DB::table($table)->exists());
 
-    if ($mode === null && $this->input->isInteractive() && ! app()->runningUnitTests()) {
+    if ($mode === null && ! $hasExistingResourceData) {
+        $mode = 'upsert';
+        $this->line('No existing resource data found. Proceeding with upsert mode.');
+    }
+
+    if ($mode === null && $hasExistingResourceData && $this->input->isInteractive() && ! app()->runningUnitTests()) {
         $selectedLabel = $this->choice(
             'How do you want to run the import?',
             array_values($modeLabels),

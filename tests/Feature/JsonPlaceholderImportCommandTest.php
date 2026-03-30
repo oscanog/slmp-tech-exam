@@ -23,6 +23,7 @@ class JsonPlaceholderImportCommandTest extends TestCase
         Http::fake($this->fakeJsonPlaceholderResponses());
 
         $this->artisan('slmp:import-jsonplaceholder')
+            ->expectsOutputToContain('No existing resource data found. Proceeding with upsert mode.')
             ->expectsOutputToContain('Starting JSONPlaceholder import...')
             ->expectsOutputToContain('Fetching users...')
             ->expectsOutputToContain('Fetched users: 2 rows.')

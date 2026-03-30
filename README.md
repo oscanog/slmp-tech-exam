@@ -60,6 +60,8 @@ When run interactively, the command asks whether you want:
 - upsert mode: import only new or changed upstream rows
 - reset mode: wipe the current database, rerun migrations, recreate Passport clients, then import everything again
 
+If the resource tables are still empty, the command skips the question and proceeds with upsert mode automatically.
+
 You can also force either mode directly:
 
 ```bash
