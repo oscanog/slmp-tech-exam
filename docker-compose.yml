@@ -30,6 +30,7 @@ services:
       JSONPLACEHOLDER_TIMEOUT: 15
       JSONPLACEHOLDER_RETRY_TIMES: 3
       JSONPLACEHOLDER_RETRY_SLEEP_MS: 500
+      SLMP_RUNTIME_CHECK_BASE_URL: http://nginx
     depends_on:
       mysql:
         condition: service_healthy

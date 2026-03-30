@@ -1,815 +1,777 @@
 {
-  "info": {
-    "_postman_id": "d1ae3c40-e893-4d72-a05f-8a1b9577c0df",
-    "name": "slmp_01 API",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "Postman collection for the slmp_01 Laravel API."
-  },
-  "variable": [
-    {
-      "key": "base_url",
-      "value": "http://localhost:8080"
-    },
-    {
-      "key": "access_token",
-      "value": ""
-    },
-    {
-      "key": "user_id",
-      "value": "1"
-    },
-    {
-      "key": "post_id",
-      "value": "1"
-    },
-    {
-      "key": "comment_id",
-      "value": "1"
-    },
-    {
-      "key": "album_id",
-      "value": "1"
-    },
-    {
-      "key": "photo_id",
-      "value": "1"
-    },
-    {
-      "key": "todo_id",
-      "value": "1"
-    },
-    {
-      "key": "reset_token",
-      "value": ""
-    }
-  ],
-  "item": [
-    {
-      "name": "System",
-      "item": [
-        {
-          "name": "Health",
-          "request": {
-            "method": "GET",
-            "url": "{{base_url}}/api/health"
-          }
-        }
-      ]
-    },
-    {
-      "name": "Auth",
-      "item": [
-        {
-          "name": "Register",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"API User\",\n  \"email\": \"api-user@example.com\",\n  \"password\": \"secret123\",\n  \"password_confirmation\": \"secret123\"\n}"
-            },
-            "url": "{{base_url}}/api/auth/register"
-          }
-        },
-        {
-          "name": "Login",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const response = pm.response.json();",
-                  "if (response.access_token) {",
-                  "  pm.collectionVariables.set('access_token', response.access_token);",
-                  "}"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"api-user@example.com\",\n  \"password\": \"secret123\"\n}"
-            },
-            "url": "{{base_url}}/api/auth/login"
-          }
-        },
-        {
-          "name": "Forgot Password",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"api-user@example.com\"\n}"
-            },
-            "url": "{{base_url}}/api/auth/forgot-password"
-          }
-        },
-        {
-          "name": "Reset Password",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"api-user@example.com\",\n  \"token\": \"{{reset_token}}\",\n  \"password\": \"new-secret123\",\n  \"password_confirmation\": \"new-secret123\"\n}"
-            },
-            "url": "{{base_url}}/api/auth/reset-password"
-          }
-        },
-        {
-          "name": "Logout",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
-            ],
-            "url": "{{base_url}}/api/auth/logout"
-          }
-        },
-        {
-          "name": "Me",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
-            ],
-            "url": "{{base_url}}/api/auth/me"
-          }
-        }
-      ]
-    },
-    {
-      "name": "Users",
-      "item": [
-        {
-          "name": "List Users",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
-            ],
-            "url": "{{base_url}}/api/users?per_page=25"
-          }
-        },
-        {
-          "name": "Show User",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
-            ],
-            "url": "{{base_url}}/api/users/{{user_id}}"
-          }
-        },
-        {
-          "name": "Create User",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"New User\",\n  \"username\": \"newuser\",\n  \"email\": \"new-user@example.com\",\n  \"phone\": \"123456789\",\n  \"website\": \"example.com\",\n  \"address\": {\n    \"city\": \"Metro City\"\n  },\n  \"company\": {\n    \"name\": \"Example Corp\"\n  },\n  \"password\": \"secret123\",\n  \"password_confirmation\": \"secret123\"\n}"
-            },
-            "url": "{{base_url}}/api/users"
-          }
-        },
-        {
-          "name": "Update User (PUT)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Updated User\",\n  \"username\": \"updateduser\",\n  \"email\": \"updated-user@example.com\",\n  \"phone\": \"987654321\",\n  \"website\": \"updated.example.com\",\n  \"address\": {\n    \"city\": \"Updated City\"\n  },\n  \"company\": {\n    \"name\": \"Updated Corp\"\n  },\n  \"password\": \"secret123\",\n  \"password_confirmation\": \"secret123\"\n}"
-            },
-            "url": "{{base_url}}/api/users/{{user_id}}"
-          }
-        },
-        {
-          "name": "Update User (PATCH)",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Patched User\"\n}"
-            },
-            "url": "{{base_url}}/api/users/{{user_id}}"
-          }
-        },
-        {
-          "name": "Delete User",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
-            ],
-            "url": "{{base_url}}/api/users/{{user_id}}"
-          }
-        }
-      ]
-    },
-    {
-      "name": "Posts",
-      "item": [
-        {
-          "name": "List Posts",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
-            ],
-            "url": "{{base_url}}/api/posts?per_page=25"
-          }
-        },
-        {
-          "name": "Show Post",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
-            ],
-            "url": "{{base_url}}/api/posts/{{post_id}}"
-          }
-        },
-        {
-          "name": "Create Post",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"user_id\": {{user_id}},\n  \"title\": \"Created Post\",\n  \"body\": \"Created post body\"\n}"
-            },
-            "url": "{{base_url}}/api/posts"
-          }
-        },
-        {
-          "name": "Update Post (PUT)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"user_id\": {{user_id}},\n  \"title\": \"Updated Post\",\n  \"body\": \"Updated post body\"\n}"
-            },
-            "url": "{{base_url}}/api/posts/{{post_id}}"
-          }
-        },
-        {
-          "name": "Update Post (PATCH)",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"Patched Post\"\n}"
-            },
-            "url": "{{base_url}}/api/posts/{{post_id}}"
-          }
-        },
-        {
-          "name": "Delete Post",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
-            ],
-            "url": "{{base_url}}/api/posts/{{post_id}}"
-          }
-        }
-      ]
-    },
-    {
-      "name": "Comments",
-      "item": [
-        {
-          "name": "List Comments",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
-            ],
-            "url": "{{base_url}}/api/comments?per_page=25"
-          }
-        },
-        {
-          "name": "Show Comment",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
-            ],
-            "url": "{{base_url}}/api/comments/{{comment_id}}"
-          }
-        },
-        {
-          "name": "Create Comment",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"post_id\": {{post_id}},\n  \"name\": \"New Comment\",\n  \"email\": \"comment@example.com\",\n  \"body\": \"Comment body\"\n}"
-            },
-            "url": "{{base_url}}/api/comments"
-          }
-        },
-        {
-          "name": "Update Comment (PUT)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"post_id\": {{post_id}},\n  \"name\": \"Updated Comment\",\n  \"email\": \"updated-comment@example.com\",\n  \"body\": \"Updated comment body\"\n}"
-            },
-            "url": "{{base_url}}/api/comments/{{comment_id}}"
-          }
-        },
-        {
-          "name": "Update Comment (PATCH)",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"body\": \"Patched comment body\"\n}"
-            },
-            "url": "{{base_url}}/api/comments/{{comment_id}}"
-          }
-        },
-        {
-          "name": "Delete Comment",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
-            ],
-            "url": "{{base_url}}/api/comments/{{comment_id}}"
-          }
-        }
-      ]
-    },
-    {
-      "name": "Albums",
-      "item": [
-        {
-          "name": "List Albums",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
-            ],
-            "url": "{{base_url}}/api/albums?per_page=25"
-          }
-        },
-        {
-          "name": "Show Album",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
-            ],
-            "url": "{{base_url}}/api/albums/{{album_id}}"
-          }
-        },
-        {
-          "name": "Create Album",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"user_id\": {{user_id}},\n  \"title\": \"New Album\"\n}"
-            },
-            "url": "{{base_url}}/api/albums"
-          }
-        },
-        {
-          "name": "Update Album (PUT)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"user_id\": {{user_id}},\n  \"title\": \"Updated Album\"\n}"
-            },
-            "url": "{{base_url}}/api/albums/{{album_id}}"
-          }
-        },
-        {
-          "name": "Update Album (PATCH)",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"Patched Album\"\n}"
-            },
-            "url": "{{base_url}}/api/albums/{{album_id}}"
-          }
-        },
-        {
-          "name": "Delete Album",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
-            ],
-            "url": "{{base_url}}/api/albums/{{album_id}}"
-          }
-        }
-      ]
-    },
-    {
-      "name": "Photos",
-      "item": [
-        {
-          "name": "List Photos",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
-            ],
-            "url": "{{base_url}}/api/photos?per_page=25"
-          }
-        },
-        {
-          "name": "Show Photo",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
-            ],
-            "url": "{{base_url}}/api/photos/{{photo_id}}"
-          }
-        },
-        {
-          "name": "Create Photo",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"album_id\": {{album_id}},\n  \"title\": \"New Photo\",\n  \"url\": \"https://example.com/photo.jpg\",\n  \"thumbnail_url\": \"https://example.com/photo-thumb.jpg\"\n}"
-            },
-            "url": "{{base_url}}/api/photos"
-          }
-        },
-        {
-          "name": "Update Photo (PUT)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"album_id\": {{album_id}},\n  \"title\": \"Updated Photo\",\n  \"url\": \"https://example.com/photo-updated.jpg\",\n  \"thumbnail_url\": \"https://example.com/photo-thumb-updated.jpg\"\n}"
-            },
-            "url": "{{base_url}}/api/photos/{{photo_id}}"
-          }
-        },
-        {
-          "name": "Update Photo (PATCH)",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"Patched Photo\"\n}"
-            },
-            "url": "{{base_url}}/api/photos/{{photo_id}}"
-          }
-        },
-        {
-          "name": "Delete Photo",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
-            ],
-            "url": "{{base_url}}/api/photos/{{photo_id}}"
-          }
-        }
-      ]
-    },
-    {
-      "name": "Todos",
-      "item": [
-        {
-          "name": "List Todos",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
-            ],
-            "url": "{{base_url}}/api/todos?per_page=25"
-          }
-        },
-        {
-          "name": "Show Todo",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
-            ],
-            "url": "{{base_url}}/api/todos/{{todo_id}}"
-          }
-        },
-        {
-          "name": "Create Todo",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"user_id\": {{user_id}},\n  \"title\": \"New Todo\",\n  \"completed\": false\n}"
-            },
-            "url": "{{base_url}}/api/todos"
-          }
-        },
-        {
-          "name": "Update Todo (PUT)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"user_id\": {{user_id}},\n  \"title\": \"Updated Todo\",\n  \"completed\": true\n}"
-            },
-            "url": "{{base_url}}/api/todos/{{todo_id}}"
-          }
-        },
-        {
-          "name": "Update Todo (PATCH)",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"completed\": true\n}"
-            },
-            "url": "{{base_url}}/api/todos/{{todo_id}}"
-          }
-        },
-        {
-          "name": "Delete Todo",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
-            ],
-            "url": "{{base_url}}/api/todos/{{todo_id}}"
-          }
-        }
-      ]
-    }
-  ]
+    "info":  {
+                 "_postman_id":  "d1ae3c40-e893-4d72-a05f-8a1b9577c0df",
+                 "name":  "slmp_01 API",
+                 "schema":  "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+                 "description":  "Postman collection for the slmp_01 Laravel API."
+             },
+    "variable":  [
+                     {
+                         "key":  "base_url",
+                         "value":  "http://localhost:8080"
+                     },
+                     {
+                         "key":  "access_token",
+                         "value":  ""
+                     },
+                     {
+                         "key":  "user_id",
+                         "value":  "1"
+                     },
+                     {
+                         "key":  "post_id",
+                         "value":  "1"
+                     },
+                     {
+                         "key":  "comment_id",
+                         "value":  "1"
+                     },
+                     {
+                         "key":  "album_id",
+                         "value":  "1"
+                     },
+                     {
+                         "key":  "photo_id",
+                         "value":  "1"
+                     },
+                     {
+                         "key":  "todo_id",
+                         "value":  "1"
+                     }
+                 ],
+    "item":  [
+                 {
+                     "name":  "System",
+                     "item":  [
+                                  {
+                                      "name":  "Health",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "url":  "{{base_url}}/api/health"
+                                                  }
+                                  }
+                              ]
+                 },
+                 {
+                     "name":  "Auth",
+                     "item":  [
+                                  {
+                                      "name":  "Register",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"name\": \"API User\",\n  \"email\": \"api-user@example.com\",\n  \"password\": \"secret123\",\n  \"password_confirmation\": \"secret123\"\n}"
+                                                               },
+                                                      "url":  "{{base_url}}/api/auth/register"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Login",
+                                      "event":  [
+                                                    {
+                                                        "listen":  "test",
+                                                        "script":  {
+                                                                       "type":  "text/javascript",
+                                                                       "exec":  [
+                                                                                    "const response = pm.response.json();",
+                                                                                    "if (response.access_token) {",
+                                                                                    "  pm.collectionVariables.set(\u0027access_token\u0027, response.access_token);",
+                                                                                    "}"
+                                                                                ]
+                                                                   }
+                                                    }
+                                                ],
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"email\": \"api-user@example.com\",\n  \"password\": \"secret123\"\n}"
+                                                               },
+                                                      "url":  "{{base_url}}/api/auth/login"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Logout",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{base_url}}/api/auth/logout"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Me",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{base_url}}/api/auth/me"
+                                                  }
+                                  }
+                              ]
+                 },
+                 {
+                     "name":  "Users",
+                     "item":  [
+                                  {
+                                      "name":  "List Users",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{base_url}}/api/users?per_page=25"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Show User",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{base_url}}/api/users/{{user_id}}"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Create User",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"name\": \"New User\",\n  \"username\": \"newuser\",\n  \"email\": \"new-user@example.com\",\n  \"phone\": \"123456789\",\n  \"website\": \"example.com\",\n  \"address\": {\n    \"city\": \"Metro City\"\n  },\n  \"company\": {\n    \"name\": \"Example Corp\"\n  },\n  \"password\": \"secret123\",\n  \"password_confirmation\": \"secret123\"\n}"
+                                                               },
+                                                      "url":  "{{base_url}}/api/users"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Update User (PUT)",
+                                      "request":  {
+                                                      "method":  "PUT",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"name\": \"Updated User\",\n  \"username\": \"updateduser\",\n  \"email\": \"updated-user@example.com\",\n  \"phone\": \"987654321\",\n  \"website\": \"updated.example.com\",\n  \"address\": {\n    \"city\": \"Updated City\"\n  },\n  \"company\": {\n    \"name\": \"Updated Corp\"\n  },\n  \"password\": \"secret123\",\n  \"password_confirmation\": \"secret123\"\n}"
+                                                               },
+                                                      "url":  "{{base_url}}/api/users/{{user_id}}"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Update User (PATCH)",
+                                      "request":  {
+                                                      "method":  "PATCH",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"name\": \"Patched User\"\n}"
+                                                               },
+                                                      "url":  "{{base_url}}/api/users/{{user_id}}"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Delete User",
+                                      "request":  {
+                                                      "method":  "DELETE",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{base_url}}/api/users/{{user_id}}"
+                                                  }
+                                  }
+                              ]
+                 },
+                 {
+                     "name":  "Posts",
+                     "item":  [
+                                  {
+                                      "name":  "List Posts",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{base_url}}/api/posts?per_page=25"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Show Post",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{base_url}}/api/posts/{{post_id}}"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Create Post",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"user_id\": {{user_id}},\n  \"title\": \"Created Post\",\n  \"body\": \"Created post body\"\n}"
+                                                               },
+                                                      "url":  "{{base_url}}/api/posts"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Update Post (PUT)",
+                                      "request":  {
+                                                      "method":  "PUT",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"user_id\": {{user_id}},\n  \"title\": \"Updated Post\",\n  \"body\": \"Updated post body\"\n}"
+                                                               },
+                                                      "url":  "{{base_url}}/api/posts/{{post_id}}"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Update Post (PATCH)",
+                                      "request":  {
+                                                      "method":  "PATCH",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"title\": \"Patched Post\"\n}"
+                                                               },
+                                                      "url":  "{{base_url}}/api/posts/{{post_id}}"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Delete Post",
+                                      "request":  {
+                                                      "method":  "DELETE",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{base_url}}/api/posts/{{post_id}}"
+                                                  }
+                                  }
+                              ]
+                 },
+                 {
+                     "name":  "Comments",
+                     "item":  [
+                                  {
+                                      "name":  "List Comments",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{base_url}}/api/comments?per_page=25"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Show Comment",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{base_url}}/api/comments/{{comment_id}}"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Create Comment",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"post_id\": {{post_id}},\n  \"name\": \"New Comment\",\n  \"email\": \"comment@example.com\",\n  \"body\": \"Comment body\"\n}"
+                                                               },
+                                                      "url":  "{{base_url}}/api/comments"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Update Comment (PUT)",
+                                      "request":  {
+                                                      "method":  "PUT",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"post_id\": {{post_id}},\n  \"name\": \"Updated Comment\",\n  \"email\": \"updated-comment@example.com\",\n  \"body\": \"Updated comment body\"\n}"
+                                                               },
+                                                      "url":  "{{base_url}}/api/comments/{{comment_id}}"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Update Comment (PATCH)",
+                                      "request":  {
+                                                      "method":  "PATCH",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"body\": \"Patched comment body\"\n}"
+                                                               },
+                                                      "url":  "{{base_url}}/api/comments/{{comment_id}}"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Delete Comment",
+                                      "request":  {
+                                                      "method":  "DELETE",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{base_url}}/api/comments/{{comment_id}}"
+                                                  }
+                                  }
+                              ]
+                 },
+                 {
+                     "name":  "Albums",
+                     "item":  [
+                                  {
+                                      "name":  "List Albums",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{base_url}}/api/albums?per_page=25"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Show Album",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{base_url}}/api/albums/{{album_id}}"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Create Album",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"user_id\": {{user_id}},\n  \"title\": \"New Album\"\n}"
+                                                               },
+                                                      "url":  "{{base_url}}/api/albums"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Update Album (PUT)",
+                                      "request":  {
+                                                      "method":  "PUT",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"user_id\": {{user_id}},\n  \"title\": \"Updated Album\"\n}"
+                                                               },
+                                                      "url":  "{{base_url}}/api/albums/{{album_id}}"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Update Album (PATCH)",
+                                      "request":  {
+                                                      "method":  "PATCH",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"title\": \"Patched Album\"\n}"
+                                                               },
+                                                      "url":  "{{base_url}}/api/albums/{{album_id}}"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Delete Album",
+                                      "request":  {
+                                                      "method":  "DELETE",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{base_url}}/api/albums/{{album_id}}"
+                                                  }
+                                  }
+                              ]
+                 },
+                 {
+                     "name":  "Photos",
+                     "item":  [
+                                  {
+                                      "name":  "List Photos",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{base_url}}/api/photos?per_page=25"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Show Photo",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{base_url}}/api/photos/{{photo_id}}"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Create Photo",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"album_id\": {{album_id}},\n  \"title\": \"New Photo\",\n  \"url\": \"https://example.com/photo.jpg\",\n  \"thumbnail_url\": \"https://example.com/photo-thumb.jpg\"\n}"
+                                                               },
+                                                      "url":  "{{base_url}}/api/photos"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Update Photo (PUT)",
+                                      "request":  {
+                                                      "method":  "PUT",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"album_id\": {{album_id}},\n  \"title\": \"Updated Photo\",\n  \"url\": \"https://example.com/photo-updated.jpg\",\n  \"thumbnail_url\": \"https://example.com/photo-thumb-updated.jpg\"\n}"
+                                                               },
+                                                      "url":  "{{base_url}}/api/photos/{{photo_id}}"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Update Photo (PATCH)",
+                                      "request":  {
+                                                      "method":  "PATCH",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"title\": \"Patched Photo\"\n}"
+                                                               },
+                                                      "url":  "{{base_url}}/api/photos/{{photo_id}}"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Delete Photo",
+                                      "request":  {
+                                                      "method":  "DELETE",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{base_url}}/api/photos/{{photo_id}}"
+                                                  }
+                                  }
+                              ]
+                 },
+                 {
+                     "name":  "Todos",
+                     "item":  [
+                                  {
+                                      "name":  "List Todos",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{base_url}}/api/todos?per_page=25"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Show Todo",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{base_url}}/api/todos/{{todo_id}}"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Create Todo",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"user_id\": {{user_id}},\n  \"title\": \"New Todo\",\n  \"completed\": false\n}"
+                                                               },
+                                                      "url":  "{{base_url}}/api/todos"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Update Todo (PUT)",
+                                      "request":  {
+                                                      "method":  "PUT",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"user_id\": {{user_id}},\n  \"title\": \"Updated Todo\",\n  \"completed\": true\n}"
+                                                               },
+                                                      "url":  "{{base_url}}/api/todos/{{todo_id}}"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Update Todo (PATCH)",
+                                      "request":  {
+                                                      "method":  "PATCH",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"completed\": true\n}"
+                                                               },
+                                                      "url":  "{{base_url}}/api/todos/{{todo_id}}"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Delete Todo",
+                                      "request":  {
+                                                      "method":  "DELETE",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{access_token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{base_url}}/api/todos/{{todo_id}}"
+                                                  }
+                                  }
+                              ]
+                 }
+             ]
 }

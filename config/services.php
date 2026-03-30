@@ -35,4 +35,17 @@ return [
         ],
     ],
 
+    'runtime_check' => [
+        'base_url' => env('SLMP_RUNTIME_CHECK_BASE_URL', 'http://localhost:8080'),
+        'timeout' => (int) env('SLMP_RUNTIME_CHECK_TIMEOUT', 10),
+        'expected_counts' => [
+            'users' => (int) env('SLMP_RUNTIME_CHECK_USERS', 10),
+            'posts' => (int) env('SLMP_RUNTIME_CHECK_POSTS', 100),
+            'comments' => (int) env('SLMP_RUNTIME_CHECK_COMMENTS', 500),
+            'albums' => (int) env('SLMP_RUNTIME_CHECK_ALBUMS', 100),
+            'photos' => (int) env('SLMP_RUNTIME_CHECK_PHOTOS', 5000),
+            'todos' => (int) env('SLMP_RUNTIME_CHECK_TODOS', 200),
+        ],
+    ],
+
 ];

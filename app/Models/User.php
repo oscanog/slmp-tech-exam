@@ -3,7 +3,6 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Notifications\ApiResetPasswordNotification;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -73,10 +72,5 @@ class User extends Authenticatable
     public function todos(): HasMany
     {
         return $this->hasMany(Todo::class);
-    }
-
-    public function sendPasswordResetNotification($token): void
-    {
-        $this->notify(new ApiResetPasswordNotification($token));
     }
 }

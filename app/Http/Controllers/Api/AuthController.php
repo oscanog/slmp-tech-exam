@@ -7,9 +7,6 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
@@ -57,55 +54,6 @@ class AuthController extends Controller
             'expires_at' => optional($tokenResult->token->expires_at)->toISOString(),
             'scopes' => ['resources:read', 'resources:write'],
             'user' => $user,
-        ]);
-    }
-
-    public function forgotPassword(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'email' => ['required', 'email'],
-        ]);
-
-        $status = Password::sendResetLink($validated);
-
-        if ($status !== Password::RESET_LINK_SENT) {
-            return response()->json([
-                'message' => __($status),
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        return response()->json([
-            'message' => __($status),
-        ]);
-    }
-
-    public function resetPassword(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'token' => ['required', 'string'],
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
-
-        $status = Password::reset(
-            $validated,
-            function (User $user, string $password): void {
-                $user->forceFill([
-                    'password' => Hash::make($password),
-                    'remember_token' => Str::random(60),
-                    'email_verified_at' => $user->email_verified_at ?? now(),
-                ])->save();
-            }
-        );
-
-        if ($status !== Password::PASSWORD_RESET) {
-            return response()->json([
-                'message' => __($status),
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        return response()->json([
-            'message' => __($status),
         ]);
     }
 

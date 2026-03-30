@@ -27,6 +27,11 @@ if [ ! -f storage/oauth-private.key ] || [ ! -f storage/oauth-public.key ]; then
   php artisan passport:keys --force
 fi
 
+if [ -f storage/oauth-private.key ] && [ -f storage/oauth-public.key ]; then
+  chown www-data:www-data storage/oauth-private.key storage/oauth-public.key
+  chmod 600 storage/oauth-private.key storage/oauth-public.key
+fi
+
 CLIENT_COUNT="$(php -r "require 'vendor/autoload.php'; \$app = require 'bootstrap/app.php'; \$app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap(); echo \Illuminate\Support\Facades\DB::table('oauth_clients')->count();")"
 CLIENT_COUNT="$(printf '%s' "$CLIENT_COUNT" | tr -dc '0-9')"
 
